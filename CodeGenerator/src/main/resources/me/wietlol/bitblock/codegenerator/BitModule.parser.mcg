@@ -1,0 +1,67 @@
+
+grammar BitModule;
+
+file
+	:	(header=header) ';'? (members=member){0,}
+	;
+
+header
+	:	(annotations=annotation){0,}
+	;
+
+annotation
+	:	'@' (name=name) ('(' ((arguments=expression) (',' arguments=expression){0,})? ')')?
+	;
+
+member
+	:	value=blueprintDeclaration		#Blueprint
+	|	value=contractDeclaration		#Contract
+	;
+
+blueprintDeclaration
+	:	(annotations=annotation){0,} 'blueprint' (name=&identifier) ('<' generics=genericTypeDeclaration (',' generics=genericTypeDeclaration){0,} ','? '>')? (':' (extends=typeReference) (',' extends=typeReference){0,})? '{' (values=Value){0,} (properties=property){0,} '}'
+	;
+
+contractDeclaration
+	:	(annotations=annotation){0,} 'contract' (name=&identifier) ('<' generics=genericTypeDeclaration (',' generics=genericTypeDeclaration){0,} ','? '>')? (':' (extends=typeReference) (',' extends=typeReference){0,})? '{' (properties=property){0,} '}'
+	;
+
+genericTypeDeclaration
+	:	(variance=('in' | 'out'))? name=&identifier (':' superType=typeReference)?
+	;
+
+value
+	:	(name=&identifier) '(' ((arguments=expression) (',' arguments=expression){0,})? ')'
+	;
+
+property
+	:	(annotations=annotation){0,} propertyType=('property' | 'value')  ('(' (index=&integer) ')')? (name=&identifier) ':' (type=typeReference) ('=' defaultValue=expression)?
+	;
+
+typeReference
+	:	(name=Name) ('<' (generics=typeReference) (',' generics=typeReference){0,} '>')? (optional='?')?	#DirectTypeReference
+	|	'*'																									#StarTypeReference
+	;
+
+name
+	:	(parts=&identifier) ('.' parts=&identifier){0,}
+	;
+
+expression
+	: value=literal										#LiteralExpression
+	| name=&identifier									#NameExpression
+	| (qualifier=expression) '.' (member=&identifier)	#MemberExpression
+	;
+
+literal
+	:	value=integerLiteral	#IntegerLiteral
+	|	value=stringLiteral		#StringLiteral
+	;
+
+integerLiteral
+	:	value=&integer
+	;
+
+stringLiteral
+	:	value=&string
+	;

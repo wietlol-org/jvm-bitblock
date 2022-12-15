@@ -1,0 +1,151 @@
+
+@Module("BitModule")
+@Owner("Wietlol")
+@Version("1.0")
+
+@Root("../../../../../java")
+
+@RootPackage("me.wietlol.bitblock.codegenerator.data")
+@BuilderPackage(".builders")
+@ModelPackage(".models")
+@SerializerPackage(".serializers")
+
+;
+
+blueprint BitModule {
+	property(1) module: String
+	property(2) owner: String
+	property(3) version: String
+
+	property(4) apiRootPackage: String
+	property(5) implRootPackage: String
+	property(6) builderPackage: String
+	property(7) apiModelPackage: String
+	property(8) implModelPackage: String
+	property(9) serializerPackage: String
+
+	property(10) annotations: List<BitAnnotation>
+	property(11) models: List<BitModel>
+
+	property(12) relativeRoot: String?
+	property(13) relativeApiRoot: String?
+	property(14) relativeImplRoot: String?
+
+	property(15) useExistingModels: Boolean
+
+	property(16) builderFacade: String?
+
+	property(17) mutableModelNameFormat: String
+	property(18) implementationNameFormat: String
+}
+
+blueprint BitAnnotation {
+	property(1) name: BitName
+	property(2) arguments: List<BitExpression>
+}
+
+blueprint BitName {
+	property(1) parts: List<String>
+}
+
+blueprint BitModelType {
+	blueprint(1, "blueprint")
+	contract(2, "contract")
+
+	property(1) id: Integer
+	property(2) name: String
+}
+
+blueprint BitModel {
+	property(1) name: String
+	property(2) generics: List<BitGenericTypeDeclaration>
+	property(3) extends: List<BitTypeReference>
+	property(4) values: List<BitValue>
+	property(5) properties: List<BitProperty>
+	property(6) annotations: List<BitAnnotation>
+	property(7) type: BitModelType
+
+	property(8) mutableVariant: String?
+	property(9) isReferenceSensitive: Boolean
+}
+
+blueprint BitPropertyType {
+	property(1, "property")
+	value(2, "value")
+
+	property(1) id: Integer
+	property(2) name: String
+}
+
+blueprint BitGenericTypeDeclaration {
+	property(1) name: String
+	property(2) variance: BitGenericVariance?
+	property(3) superType: BitTypeReference?
+}
+
+blueprint BitGenericVariance {
+	inVariance(1, "in")
+	outVariance(2, "out")
+
+	property(1) id: Integer
+	property(2) code: String
+}
+
+blueprint BitProperty {
+	property(1) name: String
+	property(2) type: BitTypeReference
+	property(3) defaultValue: BitExpression?
+	property(4) index: Integer?
+	property(5) annotations: List<BitAnnotation>
+	property(6) propertyType: BitPropertyType
+
+	property(7) isTransient: Boolean
+	property(8) isSerialized: Boolean
+	property(9) isOverride: Boolean
+}
+
+contract BitTypeReference {
+}
+
+blueprint BitDirectTypeReference : BitTypeReference {
+	property(1) typeName: BitName
+	property(2) generics: List<BitTypeReference>
+	property(3) isOptional: Boolean
+}
+
+blueprint BitStarTypeReference : BitTypeReference {
+}
+
+blueprint BitValue {
+	property(1) name: String
+	property(2) arguments: List<BitExpression>
+}
+
+contract BitExpression {
+	value type: String
+}
+
+contract BitLiteralExpression : BitExpression {
+	value value: Anything
+}
+
+blueprint BitIntegerExpression : BitLiteralExpression {
+	value type: String = "integerExpression"
+	property(1) value: Integer
+}
+
+blueprint BitStringExpression : BitLiteralExpression {
+	value type: String = "stringExpression"
+	property(1) value: String
+}
+
+blueprint BitMemberExpression : BitExpression {
+	value type: String = "memberExpression"
+	property(1) qualifier: BitExpression
+	property(2) memberName: String
+}
+
+blueprint BitNameExpression : BitExpression {
+	value type: String = "nameExpression"
+	property(1) name: String
+}
