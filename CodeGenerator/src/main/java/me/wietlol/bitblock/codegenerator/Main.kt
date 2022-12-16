@@ -42,7 +42,7 @@ object Main
 			return
 		}
 		
-		val generator = supportedLanguages[language.toLowerCase()]
+		val generator = supportedLanguages[language.lowercase()]
 		
 		if (generator == null)
 		{
